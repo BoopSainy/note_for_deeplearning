@@ -1,0 +1,20 @@
+deep convolutional neural networks (DCNNs) had been the method of choice for document recognition since LeCun et
+al.(1998), but have only recently become the mainstream of high-level vision research. Over the past two years
+DCNNs have pushed the performance of computer vision systems to soaring heights on a broad array of high-level
+problems, including image classification, object detection, fine-grained categorization, among others. A common
+theme in these works is that DCNNs trained in an end to end manner deliver strikingly better results than systems
+relying on carefully engineered representations, such as SIFT or HOG features. This succcess can be partially 
+attributed to the built-in invariance of DCNNs to local image transformations, which underpins their ability to
+learn hierarchical abstractions of data. While this invariance is clearly desirable for high-level vision tasks,
+it can hamper low-level tasks, such as pose estimation and semantic segmentation - where we want precise localization,
+rather than abstraction of spatial details.
+
+There are two technical hurdles in the application of DCNNs to image labeling tasks: signal downsampling, and spatial 
+insensitivity (invariance)
+
+在最初的FCN中，连续的下采样卷积层和池化层会虽然能提取输入图片中的高级特征，但是这些高级特征是不具有精准的localization信息的，
+比如一张224X224的图片，在特征提取结束后可能得到很多张7X7的feature map，每一个feature map虽然包含了对于image classification
+非常有意义的高级特征，但是却忽视了位置信息。同时池化操作也会丢失一些无法找回的信息。
+但是如果我们简单的想通过减少下采样率来保持localization信息，又会导致receptive field变小，进而导致提取到的高级特征质量变低（receptive
+field变小），所以希望找到一种方式，既可以保持receptive field，又可以让下采样率没有那么大。所以deeplabv1的作者提出了使用
+atrous convolutional layer去代替传统的卷积层，空洞卷积层不仅可以增大局部感知野，还可以让输出图片的大小与输入图片保持一直。
