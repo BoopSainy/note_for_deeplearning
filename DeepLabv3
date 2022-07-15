@@ -1,0 +1,125 @@
+{ record when I read the paper "Rethinking Atrous Convolution for Semantic Image Segmentation"
+  and "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs"
+}
+
+Some baseline from deeplabv2:
+first, we highliht convolution with upsampled filters, or "atrous convolution", as a powerful tool in dense
+prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses
+are computed with Deep Convolutional Neural Networks. It also allows us to efftectively enlarge the field
+of view of filters to incorporate larger context without increasing the number of parameters or the amount
+of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at 
+multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates
+and effective fields-of-views, thus capturing objects as well as image context at multiple scales. {Third, we
+imporve the localization of object boundaries by combing methods from DCNNs and probablistic graphical models. 
+The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll
+on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully
+connected Conditional Random Field(CRF),which is shown both qualitatively and quantitatively to improve 
+localization performance. Our proposed "DeepLab" system sets the new state-of-art at the PASCAL VOC-2012 
+semantic image segmentation task, reaching 79.7% mIOU in the test set, and advances the results on three 
+other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available
+online.}
+
+Deep Convolutional Neural Network (DCNNs) have pushed the performance of computer vision systems to soaring 
+heights on a broad array of high-level problems, incluing image classification and object detection, where
+DCNNs trained in an end-to-end manner have delivered strikingly better results than systems relying on hand-
+crafted features. Essential to this success is the built-in invariance of DCNNs to local image transformations,
+which allows them to learn increasingly abstract data representations. This invariance is clearly desirable
+for classification tasks, but can hamper dense prediction tasks such as semantic segmentation, where abstraction
+of spatial information is undesired.
+
+In particular we consider three challenges in the application of DCNNs to semantic image segmentation: (1) 
+reduced feature resolution, (2) existence of objects at multiple scales, and (3) reduced localization accuracy
+due to DCNN invariance. Next, we discuss these challenges and our approach to overcome them in our
+proposed DeepLab system.
+
+The first challenges is caused by the repeated combination of max-pooling and downsampling ("striding") 
+performed at consecutive layers of DCNNs originally designed for image classification. This results in feature
+maps with significantly reduced spatial resolution when the DCNN is employed in a fully convolutional fashion.
+In order to overcome this hurdle and efficiently produce denser feature maps, we remove the downsampling
+operator from the last few max pooling layers of DCNNs and instead upsample the filters in subsequent 
+convolutional layers, resulting
+
+The second challenge is caused by the existence of objects at multiple scales. A standard way to deal with this
+is to present to the DCNN rescaled version of the same image and then aggregate the featrue or score maps. We 
+show that this approach indeed increases the performance of ouor system, but comes at the cost of computing
+feature responses at all DCNN layers for multiple scaled versions of the input image. Instead, motivated by
+spatial pyramid pooling, we propose a computationally efficient scheme of resampling a given feature layer at
+multiple rates prior to covolution. This amounts to probing the original image with multiple filters that
+have complementary effective fields of view, thus capturing objects as well as useful image context at multiple
+scales. Rather than actually resampling features, we efficiently implement this mapping using multiple parallel 
+atrous convolutional layers with different sampling rates; we call the proposed technique "atrous spatial 
+pyramid pooling" (ASPP).
+
+Multiscale Image Representations using Atrous Spatial Pyramid Pooling:
+DCNNs have shown a remarkable ability to implicitly represent scale, simply be trained on datasets that contain
+objects of varying size. Still, explicitly accounting for object scale improve the DCNN's ability to successfully
+handle both large and small objects.
+We have experimented with two approaches to handling scale variability in semantic segmentation. The first
+approach amounts to standard multiscale processing. We extract DCNN score maps from multiple (three in our
+experiments) rescaled versions of the original image using parallel DCNN branches that share the same parameters.
+To produce the final result, we bilinearly interpolate the feature maps from the parallel DCNN branches to the
+orignal image resolution and fuse them, by taking at each position the maximium response across the different 
+scales. We do this both during training and testing. Multiscale processing significantly improves performance,
+but at the cost of computing feature responses at all DCNN layers for multiple scales of input.
+The second approach is inspired by the success of the R-CNN spatial pyramid pooling method of [20], which showed
+that regions of an arbitrary scale can be accurately and efficiently classified by resampling convolutional 
+features extracted at a single scale. We have implemented a variant of their scheme which uses multiple parallel
+atrous convolutional layers with different sampling rates. The features extracted for each sampling rate are
+further processed in separate branches and fused to generate the final result. The proposed "atrous spatial
+pyramid pooling" (DeepLab-ASPP) approach generalizes our DeepLab-LargeFOV variant and is illustrated in Fig [4].
+
+
+
+
+
+rethink atrous convolution for semantic image segmentation
+
+in this work, we revisit atrous convolution, a powerful tool to explicityly adjust filter's field-of-view 
+as well as control the resolution of feature responses computed by Deep Convolutional Neural Networks, in
+the application of semantic image segmentation. (空洞卷积很牛笔，它可以控制输出特征图的维度，是它降维不剧烈，保留更多
+的位置信息，同时它还不会影响局部感知野的大小 - 如果单纯的通过调整池化/正常卷积层来保持维度，会导致局部感知野变小） To handle
+the problem of segmentation objects at multiple scales, we design modules which employ atrous convolution 
+in cascade or in parallel to capture multi-scale context by adopting multiple atrous rates. Furthermore, we
+propose to augment our previously proposed Atrous Spatial Pyramid Pooling module, which probes convolutional
+features at multiple scales, with image-level features encoding global context and further boost performance.
+We also elaborate on implementation details and share our experience on training our system. The proposed "
+DeepLabv3" system significantly improves over our previous DeepLab versions without DenseCRF post-processing 
+and attains comparable performance with other state-of-art models on the PASCAL VOC 2012 semantic image
+segmentation benchmark.
+
+For the task of semantic segmentation, we consider two challenges in applying Deep Convolutional Neural 
+Networks (DCNNs). The first one is the reduced feature resolution caused by consecutive pooling operations
+or convolution striding, which allows DCNNs to learn increasingly abstract feature representations. However,
+this invariance to local image transformation may impede dense prediction tasks, where detailed spatial
+information is desired. To overcome this problem, we advocate the use of atrous convolution, which has
+been shown to be effective for semantic image segmentation. Atrous convolution, also known as dilated
+convolution, allows us to repurpose ImageNet pretrained networks to extract denser feature maps by removing 
+the downsampling operations from the last few layers and upsampling the corresponding filter kernels, 
+equivalent to inserting holes ("trous" in French) between filter weights. With atrous convolution, one is 
+able to control the resolution at which feature responses are computed within DCNNs without requiring 
+learning extra parameters.
+Another difficulty comes from the existence of objects at multiple scales. Several methods have been proposed
+to handle the problem and we mainly consider four categories in this work, as illustrated in Fig.2 First, 
+the DCNN is applied to an image pyramid to extract features for each scale input where objects at different
+scales become prominent at different feature maps. Second, the encoder-decoder structure exploits multi-scale
+features from the encoder part and recovers the spatial resolution from the decoder part. Third, extra 
+modules are cascaded on top of the original network for capturing long range information. In particular,
+DenseCRF is employed to encode pixel-level pairwise similarities,
+
+In this work, we revisit applying atrous convolution, whcih allows us to effectively enlarge the field of view
+of filters to incorporate multi-scale context, in the framework of both cascaded modules and spatial pyramid
+pooling. In particular, our proposed module consists of atrous convolution with various rates and batch 
+normalization layers which we found important to be trained as well. We experiment with laying out the 
+modules in cascade or in parallel (specifically, Atrous Spatial Pyramid Pooling (ASPP) method). We discuss
+an important practical issue when applying a 3x3 atrous conovlution with an extremely large rate, which fails
+to capture long range information.
+The encoder where the spatial dimension of feature maps is gradually reduced and thus longer range information
+is more easily captured in the deeper encoder output, and the decder where object details and spatial dimension
+are gradually recovered. For example, [60, 64] employ transpose convolution to learn the upsampling of low
+resolution feature responses. SegNet reuses the pooling indices from the encoder and learn extra convolutional
+layers to densify the feature responses, while U-Net adds skip connections from the encoder features to the
+corresponding decoder activations
+
+Spatial pyramid pooling:
+this model employs spatial pyramid pooling to capture context at several ranges. The image-level features are
+exploted in Parsenet for global context information.
