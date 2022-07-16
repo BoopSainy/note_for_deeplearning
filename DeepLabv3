@@ -123,3 +123,16 @@ corresponding decoder activations
 Spatial pyramid pooling:
 this model employs spatial pyramid pooling to capture context at several ranges. The image-level features are
 exploted in Parsenet for global context information.
+
+
+Deep Convolutional Neural Networks (DCNNs) deployed in fully convolutionalfashion have shown to be effective
+for task of semantic segmentation. However, the repeated combination of max-pooling and striding at 
+consecutive layers of these networks sig
+
+3.3 Atrous Spatial Pyramid Pooling
+ASPP with different atrous rates effectively captures multi-scale information. However, we discover that
+as the sampling rate becomes larger, the number of valid filter weights (i.e., the weights that are applied
+to the valid feature region, instead of padded zeros) becomes smaller. This effect is illustrated in Fig.4 
+when applying a 3x3 filter to a 65x65 feature map with different atrous rates. In the extreme case where
+the rate value is close to the feature map size, the 3x3 filter, instead of capturing the whole image context,
+degenerates to a simple 1x1 filter since only the center filter weight is effective
