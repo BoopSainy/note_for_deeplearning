@@ -1,0 +1,7 @@
+a closer look at spatiotemporal convolutions for action recognition
+
+in this paper we discuss several forms of spatiotemporal convolutions for video analysis and study their
+effects on action recognition. Our motivation stems from the observation that 2d cnns applied to individual
+frames of the video have remained solid performers in action recognition. In this work we empirically 
+demonstrate the accuracy advantages of 3d cnns over 2d cnns within the framework of residual learning.
+Furthermore, we show that factorizing the 3d convolutional filters into separate spatial and tempo
