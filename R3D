@@ -1,0 +1,148 @@
+learning spatio-temporal features with 3D Residual Networks for action recognition
+
+convolutional neural networks with spatio-temporal 3D kernels (3d cnns) have an ability to directly extract
+spatio-temporal features from videos for action recognition. Although the 3d kernels tend to overfit because
+of a large number of their parameters, the 3d cnns are greatly improved by using recent huge video databases.
+However, the architecture of the 3d cnns is relatively shallow against to the success of very deep neural 
+networks in 2d-based cnns, such as residual networks (ResNet). In this paper, we propose a 3d cnns based on 
+ResNet toward a better action representation. We decribe the training procedure of our 3d resnets in details.
+We experimentally evaluate the 3d resnets on the ActivityNet and Kinetics datasets. The 3d resnets trained on 
+the Kinetics did not suffer from overfitting desipte the large number of parameters of the model, and achieved
+better performance than relatively shallow networks, such as C3D. Our code and pretrained models are publicly 
+available at....
+
+introduction
+one important type of real-world information is human actions. Automatically recognizing and detecting human
+action in videos are widely used in applications such as surveillance systems, video indexing, and human 
+computer interaction.
+
+another approach that captures the spatio-temporal information adopts spatio-temporal 3d convolutional kernels
+instead of 3d ones. Because of the large number of parameters of the 3d cnns, training them on relatively small 
+video datasets, such as UCF101 and HMDB51, leads to lower performance compared with the 2d cnns pretrained on 
+the large-scale image datasets, such as ImageNet. Recent large-scale video datasets, such as Kinetics, greatly
+contribute to imporve the recognition performance of the 3d cnns. The 3d cnns are competitive to the 2d cnns 
+even though their architectures are relatively shallow compared with the architectures of 2d cnns.
+
+very deep 3d cnns for action recognition have not been explored enough because of the training difficulty caused
+by the large number of their parameters. Prior work in image recognition shows very deep architectures of cnns
+improves recognition accuracy. Exploring various deeper models for the 3d cnns and achieving lower loss at 
+convergence are important to improve action recognition performance. Residual networks resnet are one of the
+most powerful architecture. applying the architecture of resnet to 3d cnns is expected to conrtibute further
+improvements of action recognition 
+
+in this paper, we experimentally evaluate 3d resnets to get good models for action recognition. 
+
+
+3d residual networks
+network architecture
+our network is based on resnets. resnets introduce shortcut connections that bypass a signal from one layer
+to the next. The connnections pass through th
+table 1 shows our network architecture. The difference between our networks and original resnet is the number
+of dimensions of convolutional kernels and pooling. Our 3d resnets perform 3d convolution and 3d pooling. The
+size of convolutional kernels are 3x3x3, and the temporal stride of conv1 is 1, similar to c3d. The network
+uses 16 frame RGB clips as inputs. The sizes of input clips is 3x16x112x112. Down-sampling of the inputs is
+performed by conv3_1, conv4_1, conv5_1 with a stride of 2. when the number of feature maps increased, we adopt
+identity shorcuts 
+
+
+
+-----------
+can spatiotemporal 3d cnns retrace the history of 2 cnns and imagenet?
+the purpose of this study is to determine whether current video datasets have sufficient data for training
+very deep convolutional neural networks with spatio-temporal three-dimensional kernels. Recenly, the performance
+levels of 3d cnns in the field of action recognition have improved significantly. However, to date, conventional
+research has only explored relatively shallow 3d architectures. We examine the architectures of various 3d cnns
+from relatively shallow to very deep ones on current video datasets. Based on the results of those experiments, 
+the following conclusions could be obtained: (i) ResNet-18 training resulted in significant 
+
+introduction 
+the use of large-scale datasets is extremely important when using deep convolutional neural networks (CNNs),
+which have massive parameter numbers, and the use of CNNs in the field of computer vision has expanded
+significantly in recent year. ImageNet, which includes more than a million images, has contributed substantially
+to the creation of successful vision-based algorithms. In addition to such large-scale datasets, a large 
+number of algorithms, such as residual learning, have been used to improve image classification performance
+by adding increased depth to cnns and the use of very deep cnns trained on imagenet have facilitated the
+acquisition of generic feature representation. Using such feature representation, in turn, has significantly
+improved the performance of several other tasks including object detection, semantic segmentation, and image
+captioning
+To date, the video datasets available for action recognition have been relatively small when compared with image
+recognition datasets. Representative video datasets, such as UCF101 and HMDB51, can be used to provide
+realistic videos with sizes around 10k, but even though they are still used as standard benchmarks, such
+datasets are obviously too small to be used for optimizing cnn representations from scratch. In the last
+couple of years, ActivityNet, which is a somewhat larger video dataset, has become available and its use 
+has make it possible to accomplish additional tasks such as untrimmed action classification and detection,
+
+averaged accuracies of 3d resnets over top-1 and top-5 on the kinetics validation set. accuracy levels improve
+as network depths increases. The improvements continued untile reaching the depth of 152. The accuracy of 
+resnet-200 is almost the same as that of resnet-152. These results are similar to 2d resnets on imagenet
+
+to our best knowledge, this is the first work to focus on the training of very deep 3d cnns from scratch for
+action recognition. previous studies showd deeper 2d cnns trained on imagenet achieved better performance.
+however, it is not trivial to show deeper 3d cnns are better based on the previous studies because the data-scale
+of image datasets differs from that of video ones. the results of this study, which indicate deeper 3d cnns
+are more effective, can be expected to facilitate further progress in computer vision for videos
+
+related work
+video datasets: the hmdb51 and ucf101 datasets are recently the most successful in the field of action 
+recognition. these datasets gained siginificant popularity in the early years of the field, and are still
+used as popular benchmarks. however, a recent consensus has emerged that indicates that they are simply not
+large enough for training deep cnns from scratch.
+a couple of years after the abovementioned datasets were introduced, large video datasets were produced. these
+include activitynet, which contains 849 hours of video, including 28,000 action instances. activitynet also 
+provides some additional tasks, such as untrimmed classification and detection, but the number of action 
+instances is still on the order of tens of thousands. this year (2018), in an effort to create a successful 
+pretrained model, kay et al. released the kinetics dataset. the kinetics dataset includes more than 300,000
+trimmed videos covering 400 categories. in order to determine whetehr it can train deeper 3d cnns, we performed
+a number of experiments using these recent datasets, as well as the ucf-101 and hmdb51 datasets.
+
+other huge datasets such as sports1m and youtube8m have been proposed. although these databases are larger than
+kinetics, their annotations are slightly noisy and only video-level labels have been assigned. (in other words, 
+they include frames that do not relate to target actions.) such noise and the presence of unrelated frames
+have the potential to prevent these models from providing good training. in addition, with file sizes in excess
+of 10 tb, their scales are simlpe too large to allow them to be utilized easily. because of these issues, we 
+will refrain from discussing these datasets in this study.
+
+action recognition approaches
+one of the popular approaches to cnn-based action recognition is the use of two-stream cnns with 2d convolutional
+kernels. in their study, simonyan et al. proposed a method that uses rgb and stacked optical flow frames as
+appearance and motion information, respectively, and showed that combining the two-streams has the ability
+to improve action recognition accuracy. since that study, numerous methods based on the two-stream cnns
+have been proposed to improve action recognition performance.
+
+unlike the abovementioned approaches, we focused on cnns with 3d convolutional kernels, which have recently
+begun to outperform 2d cnns through the use of large-scale video datasets. these 3d cnns are intuitively 
+effective because such 3d convolution can be used to directly extract spatio-temporal features from raw videos.
+for example, ji et al. proposed applying 3d convolution to extract spatio-te
+
+
+
+experimental configuration
+we first examined the training of relatively shallow 3d cnns from scratch on each video dataset. according
+to previous works, 3d cnns trained on ucf101, hmdb51 
+
+WE USE RESNET-18, WHICH IS THE SHALLOWEST RESNET ARCHITECTURE, BASED ON THE ASSUMPTION THAT IF THE RESNET-18
+OVERFITS WHEN BEING TRAINED ON A DATASET, THAT DATASET IS TOO SMALL TO BE USED FOR TRAINING DEEP 3D CNNS
+FROM SCRATCH. SEE SECTION 4.1 FOR DETAILS.
+
+we then conducted a separate experiment to determine whether the kinetics dataset could train deeper 3d cnns.
+a main point of this trial was to determine how deeply the datasets could train 3d cnns. therefore, we trained
+3d resnets on kinetics while varying the model depth from 18 to 200. if kinetics can train very deep cnns,
+such as resnet-152, which achieved the best performance in resnets on imagenet, we can be confident that
+they have sufficient data to train 3d cnns.  therefore, the results of this experiment are expected to be very
+important for the future progress in action recognition and other video tasks. 
+
+in the final experiment, we examined the fine-tuning of kinetics pretrained 3d cnns on ucf101 and hmdb51. since
+pretrained on large-scale datasets is an effective way to achieve good performance levels on small datasets, we
+expect that the deep 3d resnets pretrained on kinetics would perform well on relatively small ucf-101 and 
+hmdb-51. this experiment examines whetehr the transfer visual representations by deep 3d cnns from one domain
+to another domain works effectively. see section 4.3 for details.
+
+
+Results:
+furthermore, we can see that resnext101 achieved the best accuracies among the architectures tested. this
+result is also similar to that seen for imagenet, and means that inrtoducing the cardinality works well for
+the 3d resnets on kinetics. in contrast, the accuracies of the densenet121 and 201 were slightly lower than 
+the other architectures. The major advantage provide by dense connection is parameter efficiency, which 
+contributes to reducing overfitting. however, kinetics did not need such techniques to train deep 3d cnns.
+
+table 3 shows the results of the kinetics test set used to compare resnext101, which 
