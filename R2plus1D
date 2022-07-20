@@ -1,0 +1,45 @@
+reading record of paper "a closer look at spatiotemporal convolutions for action recognition"
+
+in this paper we discuss several forms of spatiotemporal convolutions for video analysis and study their
+effects on action recognition. Our motivation stems from the observation that 2d cnns applied to individual
+frames of the video have remained solid performers in action recognition. In this work we empirically 
+demonstrate the accuracy advantages of 3d cnns over 2d cnns within the framework of residual learning.
+Furthermore, we show that factorizing the 3d convolutional filters into separate spatial and tempo
+
+in this paper we discuss several forms of spatiotemporal convolutions for video analysis and study their 
+effects on action recognition. Our motivations stems from the observation that 2d cnns applied to individual
+frames of the video have remained solid performers in action recognition. in this work we empirically 
+demonstrate the accuracy advatages of 3d cnns over 2d cnns within the framework of residual learning.
+furthermore, we show that factorizing the 3d convolutional filters into separate spatial and temporal
+components yields significantly gains in accuracy. our empirical study leads to the design of a new 
+spatiotemporal convolutional block "r(2+1)d" which produces cnns that achieve results comparable or 
+superior to the state-of-the art on sports 1m, kinetics, ucf101, and hmdb51
+
+introduction
+since the introduction of alexnet, deep learning has galvanized the field of still-image recognition with
+asteady sequence of remarkable advances driven by insightful design innovations, such as smaller spatial 
+filters, multi-scale convolutions, residual learning, and dense connections. conversely, it may be argued 
+that the video domain has not yet witnessed its "alexnet moment". while a deep network (i3d) does currently
+hold the best results in action recognition, the margin of improvement overv the best hand-crafted approach
+is not as impressive as in the case of image recognition. furthermore, an image-based 2d cnn (resnet-152) 
+operating on individual frames of the video achieves performance remarkably close to the state-of-the art on
+the challenging sports 1m benchmark. this result is both surprising and frustrating, given that 2d cnns 
+are unable to model temporal information and motion partterns, which one would deem to be critical aspects for
+video analysis. based on such results, one may postulate that temporal reasoning is not essential for
+accurate action recognition, because of the strong action class information already contained in the static
+frames of a sequence.
+in this work, we challenge this view and revisit the role of temporal reasoning in action recognition by
+means of 3d cnns, i.e., networks that perform 3d convolutions over the spatiotemporal video volume. while
+3d cnns have been widely explored in the setting of action recognition, here we reconsider them within 
+the framework
+we demonstrate that 3d resnets significantly outperform 2d resnets for the same depth when trained and
+evaluated on large-scale, challenging action recognition benchmarks such as sports 1m and kinetics.
+
+inspired by these results, we introduce two new forms of spatiotemporal convolution that can be viewed
+as middle grounds between the extremes of 2d (spatial convolution) and full 3d. the first formulation is 
+named mixed convolution (MC) and consists in employing 3d convolutions only in the early layers of the
+network
+the first formulation is named mixed convolution (MC) and consists in employing 3d convolutions only in 
+the early layers of the network, with 2d convolutions in the top layers. the rationale behind this design
+is that motion modeling is a low/mid-level operation that can be impplemented via 3d convolutions in the
+early layers of a network, and spatial reasoning over these mid-level motion features 
