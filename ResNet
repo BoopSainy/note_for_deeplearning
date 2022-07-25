@@ -1,0 +1,136 @@
+This would be used for several times because I always forget the details of ResNet but it is important in deep learning 
+
+1 - notes from d2l.ai tutorial:
+
+Residual Networks (ResNet) and ResNeXt
+As we design increasingly deeper networks it becomes imperative to understand how adding layers can increase the complexity and 
+expressiveness of the network. Even more important is the ability to design networks where adding layers makes networks strictly
+more expressive rather than just different. To make some progress we need a bit of mathematics.
+
+Function Classes:
+Consider F, the class of functions that a specific network architecture (together with learning rates and other hyperparameter settings)
+can reach. That is, for all f belonging to F, there exists some set of parameters (e.g., weights and biases) that can be obtained through
+training on a suitable dataset. Let's assume that f* is the "truth" function that we really would like to find. If it is in F, we are in good
+shape but typically we will not be quite so lucky. Instead, we will try to find some f*F which is our best bet within F. For instance, given
+a dataset with features X and labels y, we might try finding it by solving the following optimizing problem:
+
+f*F = argmin_{f}L(X,y,f) subject to f belonging to F.
+
+We know that regularization may control complexity of F and achieve consistency, so a larger size of training data generally leads to 
+better f*F. it is only reasonable to assume that if we design a different and more powerful architecture F' we should arrive at a better
+outcome. In other words, we would expect that f*F' is "better" than f*F. as illustrated by Fig, for non-nested function classes, a larger 
+function class does not always more closer to the "truth" function
+
+thus, only if larger function classes (deeper architecture) contain the smaller ones are we guaranteed that increasing them strictly 
+increases the expressive power of the network. For deep neural networks, if we can train the newly-added layer into an identity function
+f(x) = x, the new model will be as effective as the original model. As the nwe model may get a better solution to fit the training
+dataset, the added layer might make it easier to reduce training errors.
+
+This is the question that ... considered when working on very deep computer vision models. At the heart of their proposed residual network
+(ResNet) is the idea that every additional layer should more easily contain the identity function as one of its elements. These considerations
+are rather proffound but they led to a surprisingly simple solution, a residual block. With it, ResNet won the ....
+
+The right figure illustrates the residual block of ResNet, where the solid line carrying the layer input x to the addition operator to the 
+addition operator is called a residual connection (or shortcut connection). With residual blocks, inputs can forward propagate faster through
+the residual connections across layers. In fact, the residual block can be though as a special case of the multi-branch inception block
+
+
+class Residual(nn.Module):
+  def __init__(self, num_channels, use_1x1conv = False, strides = 1):
+    super(Residual, self).__init__()
+    self.conv1 = nn.Conv2d(num_channels, kernel_size = 3, padding = 1, strides = strides)
+    self.conv2 = nn.Conv2d(num_channels, kernel_size = 3, padding = 1)
+    if use_1x1conv:
+      self.conv3 = nn.Conv2d(num_channels, kernel_size = 1, stride = strides)
+    else:
+      self.conv3 = None
+    self.bn1 = nn.BatchNorm2d()
+    self.bn2 = nn.BatchNorm2d()
+    
+  def forward(self, x):
+    y = F.relu(self.bn1(self.conv1(x)))
+    y = self.bn2(self.conv2(y))
+    if self.conv3:
+      x = self.conv3(x)
+    y += x
+    return F.relu(y)
+
+Identity Mapping by Shortcuts:
+We adopt residual learning to every few stacked layers. A building block is shown in Fig.2. Formally, in this paper we consider
+a building block define as:
+Here x and y are the input and output vectors of the layers considered. The function F(x, W) represents the residaul mapping to 
+be learned. For the example in Fig.2 that has two layers, F = W2*ReLU(bn(W1*x)). The operation F + x is performed by a shortcut
+connection and element-wise addition. We adopt the second nonlinearity after the addition (i.e., nonlinear activation function)
+
+The shortcut connections in Eqn.(1) introduce neither extra parameter nor computation complexity. This is not only attractive in 
+practice but also important in our comparisons between plain and residual networks. We can fairly compare plain/residual newtorks that
+simultaneously have the same number of parameters, depth, width, and computational cost(expcet for the negligible element-wise
+addition).
+
+The dimensions of x and F must be equal in Eqn.(1). If thi is not the case (e.g., when changing the input/output channels), we can
+perform a linear projection Ws by the shortcut connections to match the dimensions:
+We can also use a square matrix Ws in Eqn.(1). but we will show by experiments that the identity mapping is sufficient for addressing 
+the degradation problem and is economical, and thus Ws is only used when matching dimensions.
+
+The form of the residual function F is flexible. Experiments in this paper involve a function F that has two or three layers, while 
+more layers are possible. But if F has only a single layer, Eqn.(1) is similar to a linear layer: y = W1x + x, for which we have not
+observed advantages.
+
+We also note that although the above notations are about fully connected layers for similicity, they applicable to convolutional layers.
+The function F(x, W) can represent multiple convolutional layers. The element-wise addition is performed on two feature maps, channel
+by channel.
+
+3.3 Network Architectures
+We have tested various plain/residual nets, and have observed consistent phenomena. To provide instances for discussion, we describe
+two models for ImageNet as follows.
+
+Plain network, our plain baseline are mainly inspired by the philosophy of VGG nets. The convolutional layers mostly have 3x3 filters
+and follow two simple design rules: (i) for the same output feature map size, the layers have the same number of filters; and (ii) if
+the feature map size is halved, the number of filters is doubled
+
+Residual network. based on the above plain network, we insert shortcut connections which turn the network into its counterpart 
+residual version. the identity shortcuts can be directly used when the input and output are of the same dimensions (solid line 
+shortcuts in fig.3). when the dimensions increase (dotted line shortcuts in fig.3), we consider two options: (a) the shortcut
+still performs identity mapping, with extra zero entries padded for increasing dimensions. this option introduces no extra 
+parameters; (b) the projection shortcut in eqn.(2) is used to match dimensions (done by 1x1 convolutions). for both options, 
+when the shortcuts go across feature maps of two sizes, they are performed with a stride of 2.
+
+ 
+所以，对于一个ResNet Block，有以下几种情况：
+  （1）：输入维度（b, c, h, w）与输出的（b, c, h, w）完全一致，这样意味着ResBlock中的两个卷积层都没有改变输入图像的高和宽，同时输入输出的feature map数量一样。
+对于这种情况，只需要一个identity residual connection就可以啦。
+  同时，这种情况也是最经济的方法，因为没有引入新的parameters也不需要消耗更多的computation cost
+  （2）：输入维度（b, c, h, w）与输出的（b, c, h, w）中，feature map数量不一样，通常情况是输出c变成输入c的两倍数，此时ResBlock中的两个卷积层没有改变输入图像的
+高和宽，只是有一层有着不同的input and output channel_num。对于这种情况，ResNet作者提出两种应对方法，第一种是，假设原来是(16, 128, 10, 10)，输出时变成
+了(16, 256, 10, 10)，那么我们可以让前128特征保持不变（identity mapping），之后对于多出来的128特征，直接padding上0；
+第二种方法是使用一个stride为1，kernel_size为1的卷积操作，特征数目从128映射到256；
+  （3）：如果输入维度和输出维度的高和宽也变化了，通常是输出的feature map size is halved compared with input feature map size.这个时候呢，我们仍然
+可以采用上述（2）中的两种方法调整shortcut connection，不过无论是使用哪一种，我们都要对应地调整stride值。如果是conv2d with kernel_size = 1,那么我想
+可以直接将stride = 2（为了让输出feature map size be halved);如果是使用padding 0的策略，那么我想应该是identity map时，也是有步长的map，比如
+如果想half output feature map size，那么我们就每隔一个pixel identity map一下。
+
+到这里，resnet的复习就基本结束了。
+
+不好意思没结束。
+identity vs projection shortcuts. we have shown that parameter-free, identity shortcuts help with training. Next we investigate
+projection shortcut. In
+作者一通结论就是：只用zero-padding策略效果差于projection+identity mapping效果差于全用projection，但是呢他又觉得提升的效果不明显，认为这并不是主要
+提升因素，所以它就不用全projection了因为这种策略会引入过多参数，增加训练时长
+
+deeper bottleneck architectures: next we describe our deeper nets for ImageNet. Because of concerns on the training time that we 
+can afford, we modify the building block as a bottleneck design. for each residual function F, we use a stack of 3 layers instead
+of 2. the three layers are 1x1, 3x3, and 1x1 convolutions, where the 1x1 layers are responsible for redcuing and the increasing
+(restoring) dimensions, leaving the 3x3 layer a bottleneck with smaller input/output dimensions. fig5 shows an example, where both
+designs have similar time compplexity.
+
+the parameter-free identity shortcus are particularly important for the bottleneck architectures. if the identity shortcut in fig5
+is replace with projection, one can show that the time complexity and model size are doubled, as the shortcut is connected to 
+the two high-dimensional ends. so identity shortcuts lead to more efficient models for the bottleneck designs.
+{很重要：对于使用bottleneck architectures的Res50 Res101, shortcut要使用identity mapping，否则会大幅度增加训练成本}
+
+对于深层的使用bottleneck architecture的resnet，作者使用了plan b的shortcut，也就是尽可能的使用identity mapping，实在需要进行尺寸调整时再用
+projection。
+
+这次复习真结束了。
+
+      
