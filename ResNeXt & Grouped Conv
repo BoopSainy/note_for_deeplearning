@@ -17,4 +17,33 @@ connection. Notably, the left dotted box is equivalent to much simplified right 
 that the 3x3 conv is a group conv with g groups. in fact, the group conv dates back to the idea of distributing the alexnet
 model over two gpus due to limited gpu memory at that time.
 
-以后有时间再细看resnext
+以后有时间再细看resnext paper
+有时间了，希望今天看完，能在三天内入门理解完transformer。一周跑完代码，三天写文章T T
+
+abstract:
+we present a simple, highly modularized network architecture for image classification. our network is constructed by repeating a
+building block that aggregates a set of transformations with the same topology. our simple design results in a homegeneous, multi-
+branch architecture that has only a few hyper-parameters to set. this strategy exposes a new dimension, which we call "cardinality"
+(the size of the set of transformations), as an essential factor in addition to the dimensions of depth and width. on the imagenet-1k
+dataset, we empirically show that even under the restricted condition of maintaining complexity, increasing cardinality is able to 
+improve classification accuracy. moreover, increasing cardinality is more effective than going deeper or wider when we increase
+the capacity, our models, named resnext, are the foundations of our entry to the ilsvrc 2016 classification task inwhich we secured 2nd
+place. we further investigate resnext on an imagenet-5k set and the coco detection set, also showing better results than its resnet
+counterpart. the code and models are publicly available online.
+
+introduction:
+research on visual recognition is undergoing a transition from "feature engineering" to "network engineering". in contrast to 
+traditional hand designed features (e.g., sift and hog), features learned by neural netorks from large-scale data require minimal
+human involvement during training, and can be transferred to a variety of recognition tasks. nevertheless, human effort has been
+shifted to designing better network architectures for learning representations.
+
+designing architectures becomes increasingly difficult with the growing number of hyper-parameters (width, filter size, strides, etc),
+especially when there are many layers. the vgg-nets exhibit a simple yet effective strategy of constructing very deep networks: stacking
+building blocks of the same shape. this strategy is inherited by resnets which stack modules of the same topology. this simple 
+rule reduces the free choices of hyperparameters, and depth is exposed as an essential dimension in neural networks. moreover, we 
+argue that the simplicity of this rule may reduce the risk of over-adapting the hyper-parameters o a specific dataset. the robustness
+of vgg-nets and resnts has been proven by various visual recognitio tasks and by non-visual tasks involing speech and language.
+
+unlike vgg-nets, the family of inception models have demonstrated that carefully designed topologies are able to achieve compelling
+accuracy with low theoretical complexity. the inception models have evolved over time, but an important common property is a split-
+transform-merge strategy
