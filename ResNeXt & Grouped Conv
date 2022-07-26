@@ -46,4 +46,61 @@ of vgg-nets and resnts has been proven by various visual recognitio tasks and by
 
 unlike vgg-nets, the family of inception models have demonstrated that carefully designed topologies are able to achieve compelling
 accuracy with low theoretical complexity. the inception models have evolved over time, but an important common property is a split-
-transform-merge strategy
+transform-merge strategy. in an inception module, the input is split into a few lower-dimensional embeddings (by 1x1 conv), transformed
+by a set of specialized filters (3x3, 5x5, etc), and merged by concatenation. it can be shown that the solution space of this 
+architecture is a strict subspace of the solution space of a single large layer opertaing on a high-dimensional embedding. the split-
+transform-merge behavior of inception modules is expected to approach the representational power of large and dense layers, but 
+at a considerably lower computational complexity.
+这种resnext式的结构就是想尽可能用少的模型复杂度来接近（large and dense) layers的表达能力。
+despite good accuracy, the realization of inception models has been accompanied with a series complicating factors - the filter numbers
+and sizes are tailored for each individual transformation, and the modules are customized stage-by-stage. although careful combinations
+of these components yield excellent neural network recipes, it is in general unclear how to adapt the inception architectures to new
+datasets/tasks, especially when there are many factors and hyper-parameters to be designed.
+
+in this paper, we present a simple arhchitecture which adpots vgg/resnets' strategy of repeating layers, while exploiting the split-
+transform-merge strategy in an easy, extensible way. a module in our network performs a set of transformations, each on a low-dimensional
+embedding, whose outputs are aggregated by summation. we pursuit a simple realization of this - the transformations to be aggregated 
+are all of the same topology. this design allows us to extend to any large number of transformations without specialized designs.
+(先提了一种，跟d2l.ai中讲的不一样的，输入256不split,而是通过1x1 conv大幅度降维度，再让3x3 conv (in = 4, out = 4)， 再用1x1 conv restore 维度，
+cardinality = 32， 最终将32个输出sum起来 （不是concatenate起来）
+
+interestingly, under this simplified situation we show that our model has two other equivalent forms. the reformulation in fig.3 appears
+similar to the inception-resnet module in that in concatenates multiple paths; but our module differs from all existing inception 
+modules in that all our paths share the same topology and thus the number of paths can be easily isolated as a factor to be investigated.
+in a more succinct reformulation, our module can be reshaped by K et al.'s grouped convolutions, which, however, had been developed
+as an engineering compromise.
+
+we empirically demonstrate that our aggregated transformations outperform the original resnet module, even under the restricted 
+condition of maintaining computational complexity and model size - e.g., fig.1 (right) is designed to keep the flops complexity
+and number of parameters of fig.1 (left). we emphasize that while it is relatively easy to increase accuracy by increasing capacity
+(going deeper of wider), methods that increase accuracy while maintaining (or reducing) complexity are rare in the literature.
+
+our method indicates that cardinality (the size of the set of transformations) is a concrete, measurable dimension that is of central 
+important, in addition to the dimensions of width and depth. experiments demonstrate that increasing cardinality is a more effective 
+way of gaining accuracy than going deeper or wider, especially when depth and width starts to give diminishing returns for existing
+models.
+
+our neural networks, named resnext (suggesting the next dimension), outperform resnet-101/152, resnet-200, inception-v3, and 
+inception-resnet-v2 on the imagenet classification dataset. in particular, a 101-layer resnext is able to achieve better accuracy
+than resnet-200 but has only 50% complexity. moreover, resnext exhibits considerably simpler designs than all inception models.
+resnext was the foundation of our subimission to the ilsvrc 2016 classification task, in which we secured second place. this
+paper further evaluates resnext on a larger imagenet-5k set and the coco object detection dataset, showing consistently better
+accuracy than its resnet counterparts. we expect that resnext will also generalize well to other visual and non-visual recognition 
+tasks.
+
+grouped convolutions. the sue of grouped convolutions dates back to the alexnet paper, if not earlier. the motivation given by K et al.
+is for distributing the model over two gpus. grouped convs are supported by caffe, torch and other libraries, mainly for compatibility 
+of alexnet. to the best of our knowledge, there has been little evidence on exploiting grouped convolutions to improve accuracy.
+a special case of grouped convolutions is channel-wise convs in which the number of groups is equal to the number of channels.
+
+
+
+method:
+in eqn (2) C is the size of the set of transformations to be aggregated. we refer to C as cardinality. in eqn2 c is in a position
+similar to D in eqn (1), but C need not equal to D and can be an arbitrary number.
+
+
+几点重要的：
+（1）作者认为它的aggregated/early concatenate/group conv reformulation只有当residual block中的conv layers >= 3时才会有明显的作用；而对于
+conv layers = 2的，没必要reformulation
+ (2) 作者认为在homogenous forms情况下，aggregated/early concatenate/group conv reformulation可以互通，但是heterogenous下不一定了。
